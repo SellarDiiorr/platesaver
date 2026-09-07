@@ -7,9 +7,12 @@ const dealsContainer = document.getElementById("deals");
 const searchInput = document.getElementById("search");
 const resultsCount = document.getElementById("results-count");
 const filterButtons = document.querySelectorAll(".filters button");
+const locationButton = document.getElementById("location-btn");
+const locationStatus = document.getElementById("location-status");
 
 let activeFilter = "all";
-
+let userLatitude = null;
+let userLongitude = null;
 function getDealDays(daysText) {
   if (!daysText) return [];
 
@@ -158,5 +161,25 @@ filterButtons.forEach(button => {
     renderDeals();
   });
 });
+locationButton.addEventListener("click", () => {
+  if (!navigator.geolocation) {
+    locationStatus.textContent = "Location services are not supported by this browser.";
+    return;
+  }
 
+  locationStatus.textContent = "Finding your location...";
+
+  navigator.geolocation.getCurrentPosition(
+    (position) => {
+      userLatitude = position.coords.latitude;
+      userLongitude = position.coords.longitude;
+
+      locationStatus.textContent = "📍 Location found!";
+    },
+    () => {
+      locationStatus.textContent =
+        "We couldn't access your location. Please allow location access and try again.";
+    }
+  );
+});
 loadDeals();
