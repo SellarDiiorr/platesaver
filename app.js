@@ -20,7 +20,25 @@ function getDealDays(daysText) {
     .split(",")
     .map(day => day.trim());
 }
+function calculateDistanceMiles(lat1, lon1, lat2, lon2) {
+  const earthRadiusMiles = 3958.8;
 
+  const toRadians = (degrees) => degrees * (Math.PI / 180);
+
+  const dLat = toRadians(lat2 - lat1);
+  const dLon = toRadians(lon2 - lon1);
+
+  const a =
+    Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+    Math.cos(toRadians(lat1)) *
+      Math.cos(toRadians(lat2)) *
+      Math.sin(dLon / 2) *
+      Math.sin(dLon / 2);
+
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+
+  return earthRadiusMiles * c;
+}
 function isToday(daysText) {
   const today = new Date().toLocaleDateString("en-US", {
     weekday: "long"
@@ -69,8 +87,29 @@ async function loadDeals() {
 
 function renderDeals() {
   const searchTerm = searchInput.value.toLowerCase().trim();
+const dealsWithDistance = deals.map((deal) => {
+  let distance = null;
 
-  const filteredDeals = deals.filter((deal) => {
+  if (
+    userLatitude !== null &&
+    userLongitude !== null &&
+    deal.latitude !== null &&
+    deal.longitude !== null
+  ) {
+    distance = calculateDistanceMiles(
+      userLatitude,
+      userLongitude,
+      deal.latitude,
+      deal.longitude
+    );
+  }
+
+  return {
+    ...deal,
+    distance
+  };
+});
+  const filteredDeals = dealsWithDistance.filter((deal) => {
     const restaurant = (deal.restaurant || "").toLowerCase();
     const title = (deal.title || "").toLowerCase();
 
@@ -121,8 +160,13 @@ function renderDeals() {
           <div class="restaurant">
             ${deal.restaurant}
           </div>
+${deal.distance !== null ? `
+  <div class="deal-info">
+    📍 ${deal.distance.toFixed(1)} miles away
+  </div>
+` : ""}
 
-          <div class="deal-info">
+<div class="deal-info">
             📅 ${deal.days}
           </div>
 
@@ -175,8 +219,9 @@ locationButton.addEventListener("click", () => {
       userLongitude = position.coords.longitude;
 
       locationStatus.textContent = "📍 Location found!";
-    },
-    () => {
+   renderDeals();    
+},
+() => {
       locationStatus.textContent =
         "We couldn't access your location. Please allow location access and try again.";
     }
