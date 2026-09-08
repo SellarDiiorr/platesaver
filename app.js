@@ -206,12 +206,12 @@ ${deal.distance !== null ? `
     )
     .join("");
 }
+
 distanceSelect.addEventListener("change", () => {
   activeDistance = distanceSelect.value;
-  locationStatus.textContent = `Distance filter set to ${activeDistance}`;
   renderDeals();
+  
 });
-
 searchInput.addEventListener("input", renderDeals);
 
 filterButtons.forEach(button => {
