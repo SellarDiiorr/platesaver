@@ -137,7 +137,14 @@ const dealsWithDistance = deals.map((deal) => {
 
     return matchesSearch && matchesFilter;
   });
+const sortedDeals = [...filteredDeals].sort((a, b) => {
+  if (a.distance === null && b.distance === null) return 0;
+  if (a.distance === null) return 1;
+  if (b.distance === null) return -1;
 
+  return a.distance - b.distance;
+});
+  
   resultsCount.textContent =
     `${filteredDeals.length} deal${filteredDeals.length === 1 ? "" : "s"} found`;
 
@@ -150,7 +157,7 @@ const dealsWithDistance = deals.map((deal) => {
     return;
   }
 
-  dealsContainer.innerHTML = filteredDeals
+  dealsContainer.innerHTML = sortedDeals
     .map(
       deal => `
         <article class="deal-card">
