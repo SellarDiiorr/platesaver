@@ -74,11 +74,11 @@ async function loadDeals() {
 
 deals = data.map(deal => ({
   ...deal,
-  restaurant: deal.restaurants?.name ?? deal.restaurant,
-  address: deal.restaurants?.address ?? deal.address,
-  city: deal.restaurants?.city ?? deal.city,
-  latitude: deal.restaurants?.latitude ?? deal.latitude,
-  longitude: deal.restaurants?.longitude ?? deal.longitude
+  restaurant: deal.restaurants?.name,
+  address: deal.restaurants?.address,
+  city: deal.restaurants?.city,
+  latitude: deal.restaurants?.latitude,
+  longitude: deal.restaurants?.longitude
 }));
     
     renderDeals();
