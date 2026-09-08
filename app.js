@@ -208,6 +208,7 @@ ${deal.distance !== null ? `
 }
 distanceSelect.addEventListener("change", () => {
   activeDistance = distanceSelect.value;
+  locationStatus.textContent = `Distance filter set to ${activeDistance}`;
   renderDeals();
 });
 
