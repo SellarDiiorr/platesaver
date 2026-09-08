@@ -9,8 +9,10 @@ const resultsCount = document.getElementById("results-count");
 const filterButtons = document.querySelectorAll(".filters button");
 const locationButton = document.getElementById("location-btn");
 const locationStatus = document.getElementById("location-status");
+const distanceSelect = document.getElementById("distance-select");
 
 let activeFilter = "all";
+let activeDistance = "all";
 let userLatitude = null;
 let userLongitude = null;
 function getDealDays(daysText) {
@@ -134,8 +136,17 @@ const dealsWithDistance = deals.map((deal) => {
     if (activeFilter === "kids") {
       matchesFilter = deal.category === "kids";
     }
+let matchesDistance = true;
 
-    return matchesSearch && matchesFilter;
+if (activeDistance !== "all") {
+  const maxDistance = Number(activeDistance);
+
+  matchesDistance =
+    deal.distance !== null &&
+    deal.distance <= maxDistance;
+}
+    
+    return matchesSearch && matchesFilter && matchesDistance;
   });
 const sortedDeals = [...filteredDeals].sort((a, b) => {
   if (a.distance === null && b.distance === null) return 0;
@@ -195,6 +206,10 @@ ${deal.distance !== null ? `
     )
     .join("");
 }
+distanceSelect.addEventListener("change", () => {
+  activeDistance = distanceSelect.value;
+  renderDeals();
+});
 
 searchInput.addEventListener("input", renderDeals);
 
