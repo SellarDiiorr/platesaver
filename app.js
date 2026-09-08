@@ -58,8 +58,7 @@ async function loadDeals() {
 
   try {
     const response = await fetch(
-      `${SUPABASE_URL}/rest/v1/deals?select=*&active=eq.true&order=id.asc`,
-      {
+      `${SUPABASE_URL}/rest/v1/deals?select=*,restaurants!deals_restaurant_id_fkey(name,address,city,latitude,longitude,website)&active=eq.true&order=id.asc`,      {
         headers: {
           apikey: SUPABASE_KEY,
           Authorization: `Bearer ${SUPABASE_KEY}`
@@ -71,8 +70,17 @@ async function loadDeals() {
       throw new Error(`Supabase error: ${response.status}`);
     }
 
-    deals = await response.json();
+    const data = await response.json();
 
+deals = data.map(deal => ({
+  ...deal,
+  restaurant: deal.restaurants?.name ?? deal.restaurant,
+  address: deal.restaurants?.address ?? deal.address,
+  city: deal.restaurants?.city ?? deal.city,
+  latitude: deal.restaurants?.latitude ?? deal.latitude,
+  longitude: deal.restaurants?.longitude ?? deal.longitude
+}));
+    
     renderDeals();
   } catch (error) {
     console.error("Could not load PlateSaver deals:", error);
