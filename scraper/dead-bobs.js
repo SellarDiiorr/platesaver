@@ -12,26 +12,25 @@ async function scrapeDeadBobs() {
     }
 
     const html = await response.text();
-    const lowerHtml = html.toLowerCase();
+    const headingMatches = [...html.matchAll(/<h3[^>]*>(.*?)<\/h3>/gis)];
+    const priceMatches = [...html.matchAll(/<strong[^>]*>(\$[\d,.]+)<\/strong>/gis)];
 
-    const priceIndex = lowerHtml.indexOf("$9.99");
+const cleanText = (text) =>
+  text
+    .replace(/<[^>]+>/g, "")
+    .replace(/&amp;/g, "&")
+    .replace(/&#8217;/g, "'")
+    .replace(/\s+/g, " ")
+    .trim();
 
-    if (priceIndex !== -1) {
-    const context = html.substring(
-    Math.max(0, priceIndex - 500),
-    Math.min(html.length, priceIndex + 500)
-  );
+const headings = headingMatches.map(match => cleanText(match[1]));
+const prices = priceMatches.map(match => cleanText(match[1]));
 
-  console.log("🍔 Found $9.99 — surrounding webpage content:");
-  console.log(context);
-}
-    
-console.log("🔎 Looking for deal-related words...");
-console.log("Contains 'special':", lowerHtml.includes("special"));
-console.log("Contains 'monday':", lowerHtml.includes("monday"));
-console.log("Contains 'tuesday':", lowerHtml.includes("tuesday"));
-console.log("Contains '$9.99':", lowerHtml.includes("$9.99"));
-console.log("Contains 'chicken parmesan':", lowerHtml.includes("chicken parmesan"));
+console.log("🍽️ Potential deal titles:");
+console.log(headings);
+
+console.log("💵 Potential deal prices:");
+console.log(prices);
     
     console.log("✅ Dead Bob's website reached successfully!");
     console.log(`Downloaded ${html.length} characters of webpage data.`);
