@@ -17,4 +17,4 @@ jobs:
           node-version: '20'
 
       - name: Run Dead Bob's scraper
-        run: node scrapers/dead-bobs.js
+        run: node scraper/dead-bobs.js
