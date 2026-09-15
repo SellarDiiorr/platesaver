@@ -14,6 +14,18 @@ async function scrapeDeadBobs() {
     const html = await response.text();
     const lowerHtml = html.toLowerCase();
 
+    const priceIndex = lowerHtml.indexOf("$9.99");
+
+    if (priceIndex !== -1) {
+    const context = html.substring(
+    Math.max(0, priceIndex - 500),
+    Math.min(html.length, priceIndex + 500)
+  );
+
+  console.log("🍔 Found $9.99 — surrounding webpage content:");
+  console.log(context);
+}
+    
 console.log("🔎 Looking for deal-related words...");
 console.log("Contains 'special':", lowerHtml.includes("special"));
 console.log("Contains 'monday':", lowerHtml.includes("monday"));
