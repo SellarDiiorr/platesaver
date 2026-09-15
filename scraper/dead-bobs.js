@@ -15,9 +15,11 @@ async function scrapeDeadBobs() {
 
     console.log("✅ Dead Bob's website reached successfully!");
     console.log(`Downloaded ${html.length} characters of webpage data.`);
-  } catch (error) {
-    console.error("❌ Scraper failed:", error.message);
-  }
+ } catch (error) {
+  console.error("❌ Scraper failed:", error);
+  console.error("Cause:", error.cause);
+  process.exit(1);
+}
 }
 
 scrapeDeadBobs();
