@@ -1,4 +1,4 @@
-const URL = "https://deadbobsbar.com/";
+const URL = "https://deadbobsstpete.com/";
 
 async function scrapeDeadBobs() {
   console.log("🍽️ PlateSaver scraper starting...");
