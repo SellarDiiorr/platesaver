@@ -1,0 +1,20 @@
+name: Dead Bob's Scraper
+
+on:
+  workflow_dispatch:
+
+jobs:
+  scrape:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Get PlateSaver code
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Run Dead Bob's scraper
+        run: node scrapers/dead-bobs.js
