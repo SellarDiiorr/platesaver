@@ -25,7 +25,23 @@ const cleanText = (text) =>
 
 const headings = headingMatches.map(match => cleanText(match[1]));
 const prices = priceMatches.map(match => cleanText(match[1]));
+const deals = prices.map((price, index) => ({
+  restaurant_id: 5,
+  restaurant: "Dead Bob's Bar & Restaurant",
+  title: headings[index],
+  price: price,
+  source: URL,
+  verification_status: "pending",
+  verification_method: "automated"
+}));
 
+console.log("🤖 PlateSaver structured deals:");
+
+deals.forEach((deal, index) => {
+  console.log(`Deal ${index + 1}:`);
+  console.log(deal);
+});
+    
 console.log("🍽️ Potential deal titles:");
 console.log(headings);
 
