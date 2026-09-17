@@ -77,6 +77,37 @@ databaseDeals.forEach((deal) => {
     `DB #${deal.id}: ${deal.title} | ${deal.price} | active=${deal.active}`
   );
 });
+
+console.log("🔎 Comparing website deals with PlateSaver database...");
+
+const normalize = (text) =>
+  String(text || "")
+    .toLowerCase()
+    .replace(/[^a-z0-9]/g, "");
+
+deals.forEach((scrapedDeal) => {
+  const match = databaseDeals.find(
+    (dbDeal) => normalize(dbDeal.title) === normalize(scrapedDeal.title)
+  );
+
+  if (!match) {
+    console.log(
+      `🆕 NEW DEAL: ${scrapedDeal.title} | ${scrapedDeal.price}`
+    );
+    return;
+  }
+
+  if (String(match.price) !== String(scrapedDeal.price)) {
+    console.log(
+      `💲 PRICE CHANGE: ${scrapedDeal.title} | DB: ${match.price} → Website: ${scrapedDeal.price}`
+    );
+    return;
+  }
+
+console.log(
+    `🟢 MATCH: ${scrapedDeal.title} | ${scrapedDeal.price}`
+  );
+});
     
 console.log("🤖 PlateSaver structured deals:");
 
