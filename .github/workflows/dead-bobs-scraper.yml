@@ -16,5 +16,8 @@ jobs:
         with:
           node-version: '20'
 
-      - name: Run Dead Bob's scraper
-        run: node scraper/dead-bobs.js
+- name: Run Dead Bob's scraper
+  env:
+    SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+    SUPABASE_KEY: ${{ secrets.SUPABASE_KEY }}
+  run: node scraper/dead-bobs.js
