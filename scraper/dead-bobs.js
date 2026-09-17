@@ -1,3 +1,4 @@
+const { normalize } = require("./scraper-engine");
 const URL = "https://deadbobsstpete.com/";
 const SUPABASE_URL = process.env.SUPABASE_URL;
 const SUPABASE_KEY = process.env.SUPABASE_KEY;
@@ -146,11 +147,6 @@ databaseDeals.forEach((deal) => {
 });
 
 console.log("🔎 Comparing website deals with PlateSaver database...");
-
-const normalize = (text) =>
-  String(text || "")
-    .toLowerCase()
-    .replace(/[^a-z0-9]/g, "");
 
 const similarity = (a, b) => {
   const first = normalize(a);
