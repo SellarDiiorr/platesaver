@@ -1,8 +1,5 @@
 const {
-  normalize,
-  similarity,
-  getRestaurantDeals,
-  insertPendingDeal
+  processScrapedDeals
 } = require("./scraper-engine");
 const URL = "https://deadbobsstpete.com/";
 const RESTAURANT_ID = 5;
@@ -73,106 +70,9 @@ deals.forEach((deal) => {
   console.log(`${deal.title} | ${deal.price}`);
 });
     
-console.log("🗄️ Reading Dead Bob's existing deals from Supabase...");
-
-const databaseDeals = await getRestaurantDeals(RESTAURANT_ID);
+await processScrapedDeals(deals, RESTAURANT_ID);
     
-console.log(`📦 Supabase returned ${databaseDeals.length} Dead Bob's deals:`);
-
-databaseDeals.forEach((deal) => {
-  console.log(
-    `DB #${deal.id}: ${deal.title} | ${deal.price} | active=${deal.active}`
-  );
-});
-
-console.log("🔎 Comparing website deals with PlateSaver database...");
-  
-for (const scrapedDeal of deals) {
-  const match = databaseDeals.find(
-    (dbDeal) => normalize(dbDeal.title) === normalize(scrapedDeal.title)
-  );
-
-const possibleMatch = !match
-  ? databaseDeals
-      .map((dbDeal) => ({
-        deal: dbDeal,
-        score: similarity(dbDeal.title, scrapedDeal.title)
-      }))
-      .sort((a, b) => b.score - a.score)[0]
-  : null;
-
-  if (match) {
-  if (String(match.price) !== String(scrapedDeal.price)) {
-    console.log(
-      `💰 PRICE CHANGE: ${scrapedDeal.title} | DB: ${match.price} → Website: ${scrapedDeal.price}`
-    );
-  } else {
-    console.log(
-      `🟢 MATCH: ${scrapedDeal.title} | ${scrapedDeal.price}`
-    );
-  }
-
-  continue;
-}  
-  
- if (!match) {
-  if (possibleMatch && possibleMatch.score >= 0.7) {
-    console.log(
-      `🟡 POSSIBLE MATCH: Website "${scrapedDeal.title}" ↔ DB "${possibleMatch.deal.title}" | score=${possibleMatch.score.toFixed(2)}`
-    );
-    continue;
-  }
-
-  console.log(
-    `🆕 NEW DEAL: ${scrapedDeal.title} | ${scrapedDeal.price}`
-  );
-  
-const insertedDeal = await insertPendingDeal(scrapedDeal);
-
-if (insertedDeal) {
-  console.log(
-    `📥 STAGED FOR REVIEW: DB #${insertedDeal.id} | ${insertedDeal.title} | active=${insertedDeal.active}`
-  );
-}
-   continue;
- }
-   
-  if (String(match.price) !== String(scrapedDeal.price)) {
-    console.log(
-      `💲 PRICE CHANGE: ${scrapedDeal.title} | DB: ${match.price} → Website: ${scrapedDeal.price}`
-    );
-    continue;
-  }
-
-console.log(
-    `🟢 MATCH: ${scrapedDeal.title} | ${scrapedDeal.price}`
-  );
-}
-
-console.log("🔎 Checking for database deals missing from website...");
-
-databaseDeals.forEach((dbDeal) => {
-  const match = deals.find(
-    (scrapedDeal) =>
-      normalize(scrapedDeal.title) === normalize(dbDeal.title)
-  );
-
-const possibleMatch = !match
-  ? deals
-      .map((scrapedDeal) => ({
-        deal: scrapedDeal,
-        score: similarity(dbDeal.title, scrapedDeal.title)
-      }))
-      .sort((a, b) => b.score - a.score)[0]
-  : null;
-  
-  if (!match && (!possibleMatch || possibleMatch.score < 0.7)) {
-    console.log(
-      `⚠️ MISSING FROM WEBSITE: ${dbDeal.title} | DB: ${dbDeal.price}`
-    );
-  }
-});    
-console.log("🤖 PlateSaver structured deals:");
+    console.log("🤖 PlateSaver structured deals:");
 
 deals.forEach((deal, index) => {
   console.log(`Deal ${index + 1}:`);
