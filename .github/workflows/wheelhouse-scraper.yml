@@ -1,1 +1,20 @@
+name: Wheelhouse Scraper
 
+on:
+  workflow_dispatch:
+
+jobs:
+  scrape:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Run Wheelhouse scraper
+        run: node scraper/wheelhouse.js
