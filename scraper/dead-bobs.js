@@ -28,7 +28,21 @@ const cleanText = (text) =>
 
 const headings = headingMatches.map(match => cleanText(match[1]));
 const prices = priceMatches.map(match => cleanText(match[1]));
-if (headings.length < prices.length) {
+    console.log("🧪 Inspecting context around scraped prices...");
+
+prices.forEach((price) => {
+  const index = html.indexOf(price);
+
+  if (index !== -1) {
+    const start = Math.max(0, index - 500);
+    const end = Math.min(html.length, index + 800);
+
+    console.log(`\n----- CONTEXT FOR ${price} -----`);
+    console.log(html.slice(start, end));
+    console.log("----- END CONTEXT -----\n");
+  }
+});
+    if (headings.length < prices.length) {
   throw new Error(
     `Extraction mismatch: found ${headings.length} headings but ${prices.length} prices`
   );
