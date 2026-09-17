@@ -6,7 +6,11 @@ on:
 jobs:
   scrape:
     runs-on: ubuntu-latest
-
+    env:
+      SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+      SUPABASE_KEY: ${{ secrets.SUPABASE_KEY }}
+      SUPABASE_SECRET_KEY: ${{ secrets.SUPABASE_SECRET_KEY }}
+      
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
