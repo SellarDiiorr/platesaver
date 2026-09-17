@@ -5,9 +5,6 @@ const {
   insertPendingDeal
 } = require("./scraper-engine");
 const URL = "https://deadbobsstpete.com/";
-const SUPABASE_URL = process.env.SUPABASE_URL;
-const SUPABASE_KEY = process.env.SUPABASE_KEY;
-const SUPABASE_SECRET_KEY = process.env.SUPABASE_SECRET_KEY;
 const RESTAURANT_ID = 5;
 
 async function scrapeDeadBobs() {
