@@ -14,16 +14,45 @@ const similarity = (a, b) => {
   const first = normalize(a);
   const second = normalize(b);
 
+  // Exact normalized match
   if (first === second) return 1;
 
-  if (first.startsWith(second) || second.startsWith(first)) {
+  // Strong partial-title match
+  if (first.includes(second) || second.includes(first)) {
     const shorter = Math.min(first.length, second.length);
     const longer = Math.max(first.length, second.length);
 
-    return shorter / longer;
+    // Give meaningful contained titles a strong match score.
+    if (shorter >= 8) {
+      return Math.max(0.8, shorter / longer);
+    }
   }
 
-  return 0;
+  // Word-overlap matching
+  const wordsA = String(a || "")
+    .toLowerCase()
+    .replace(/[^a-z0-9\s]/g, " ")
+    .split(/\s+/)
+    .filter(Boolean);
+
+  const wordsB = String(b || "")
+    .toLowerCase()
+    .replace(/[^a-z0-9\s]/g, " ")
+    .split(/\s+/)
+    .filter(Boolean);
+
+  const setA = new Set(wordsA);
+  const setB = new Set(wordsB);
+
+  const sharedWords = [...setA].filter((word) =>
+    setB.has(word)
+  );
+
+  const smallerSetSize = Math.min(setA.size, setB.size);
+
+  if (smallerSetSize === 0) return 0;
+
+  return sharedWords.length / smallerSetSize;
 };
 
 async function getRestaurantDeals(restaurantId) {
