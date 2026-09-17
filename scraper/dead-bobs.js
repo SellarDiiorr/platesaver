@@ -23,7 +23,6 @@ async function insertPendingDeal(deal) {
     },
     body: JSON.stringify({
       restaurant_id: deal.restaurant_id,
-      restaurant: deal.restaurant,
       title: deal.title,
       price: deal.price,
       source: deal.source,
