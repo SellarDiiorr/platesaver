@@ -108,7 +108,21 @@ console.log(
     `🟢 MATCH: ${scrapedDeal.title} | ${scrapedDeal.price}`
   );
 });
-    
+
+console.log("🔎 Checking for database deals missing from website...");
+
+databaseDeals.forEach((dbDeal) => {
+  const match = deals.find(
+    (scrapedDeal) =>
+      normalize(scrapedDeal.title) === normalize(dbDeal.title)
+  );
+
+  if (!match) {
+    console.log(
+      `⚠️ MISSING FROM WEBSITE: ${dbDeal.title} | DB: ${dbDeal.price}`
+    );
+  }
+});    
 console.log("🤖 PlateSaver structured deals:");
 
 deals.forEach((deal, index) => {
