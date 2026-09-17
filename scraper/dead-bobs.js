@@ -36,12 +36,12 @@ const deals = priceMatches.map((priceMatch) => {
   const htmlBeforePrice = html.slice(0, priceIndex);
 
   // Find every H3 heading before the price.
-  const precedingHeadings = [
-    ...htmlBeforePrice.matchAll(
-      /<h3[^>]*class=["'][^"']*elementor-heading-title[^"']*["'][^>]*>([\s\S]*?)<\/h3>/gi
-    )
-  ];
-
+ const precedingHeadings = [
+  ...htmlBeforePrice.matchAll(
+    /<h3[^>]*>([\s\S]*?)<\/h3>/gi
+  )
+];
+  
   // The last H3 before the price should belong to this deal.
   const nearestHeading = precedingHeadings.at(-1);
 
