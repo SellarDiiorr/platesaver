@@ -1,3 +1,6 @@
+const {
+  processScrapedDeals
+} = require("./scraper-engine");
 const URL = "https://thebierboutiquestpete.com/specials";
 const RESTAURANT_ID = 7;
 
@@ -103,6 +106,15 @@ deals.forEach((deal, index) => {
   console.log(`Deal ${index + 1}:`);
   console.log(deal);
 });
+
+const dealsWithPrices = deals.filter(
+  (deal) => deal.price !== null
+);
+
+await processScrapedDeals(
+  dealsWithPrices,
+  RESTAURANT_ID
+);
     
     console.log("\n🏁 Bier Boutique inspection complete.");
   } catch (error) {
