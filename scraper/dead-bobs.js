@@ -149,7 +149,16 @@ databaseDeals.forEach((dbDeal) => {
       normalize(scrapedDeal.title) === normalize(dbDeal.title)
   );
 
-  if (!match) {
+const possibleMatch = !match
+  ? deals
+      .map((scrapedDeal) => ({
+        deal: scrapedDeal,
+        score: similarity(dbDeal.title, scrapedDeal.title)
+      }))
+      .sort((a, b) => b.score - a.score)[0]
+  : null;
+  
+  if (!match && (!possibleMatch || possibleMatch.score < 0.7)) {
     console.log(
       `⚠️ MISSING FROM WEBSITE: ${dbDeal.title} | DB: ${dbDeal.price}`
     );
