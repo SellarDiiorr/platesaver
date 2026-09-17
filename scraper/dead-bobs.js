@@ -85,18 +85,50 @@ const normalize = (text) =>
     .toLowerCase()
     .replace(/[^a-z0-9]/g, "");
 
+const similarity = (a, b) => {
+  const first = normalize(a);
+  const second = normalize(b);
+
+  if (first === second) return 1;
+
+  if (first.startsWith(second) || second.startsWith(first)) {
+    const shorter = Math.min(first.length, second.length);
+    const longer = Math.max(first.length, second.length);
+
+    return shorter / longer;
+  }
+
+  return 0;
+};
+    
 deals.forEach((scrapedDeal) => {
   const match = databaseDeals.find(
     (dbDeal) => normalize(dbDeal.title) === normalize(scrapedDeal.title)
   );
 
-  if (!match) {
+const possibleMatch = !match
+  ? databaseDeals
+      .map((dbDeal) => ({
+        deal: dbDeal,
+        score: similarity(dbDeal.title, scrapedDeal.title)
+      }))
+      .sort((a, b) => b.score - a.score)[0]
+  : null;
+  
+ if (!match) {
+  if (possibleMatch && possibleMatch.score >= 0.7) {
     console.log(
-      `🆕 NEW DEAL: ${scrapedDeal.title} | ${scrapedDeal.price}`
+      `🟡 POSSIBLE MATCH: Website "${scrapedDeal.title}" ↔ DB "${possibleMatch.deal.title}" | score=${possibleMatch.score.toFixed(2)}`
     );
     return;
   }
 
+  console.log(
+    `🆕 NEW DEAL: ${scrapedDeal.title} | ${scrapedDeal.price}`
+  );
+  return;
+}
+  
   if (String(match.price) !== String(scrapedDeal.price)) {
     console.log(
       `💲 PRICE CHANGE: ${scrapedDeal.title} | DB: ${match.price} → Website: ${scrapedDeal.price}`
