@@ -134,6 +134,20 @@ const possibleMatch = !match
       }))
       .sort((a, b) => b.score - a.score)[0]
   : null;
+
+  if (match) {
+  if (String(match.price) !== String(scrapedDeal.price)) {
+    console.log(
+      `💰 PRICE CHANGE: ${scrapedDeal.title} | DB: ${match.price} → Website: ${scrapedDeal.price}`
+    );
+  } else {
+    console.log(
+      `🟢 MATCH: ${scrapedDeal.title} | ${scrapedDeal.price}`
+    );
+  }
+
+  return;
+}  
   
  if (!match) {
   if (possibleMatch && possibleMatch.score >= 0.7) {
