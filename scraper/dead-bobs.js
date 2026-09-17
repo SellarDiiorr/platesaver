@@ -35,12 +35,21 @@ async function insertPendingDeal(deal) {
   });
 
   if (!response.ok) {
-    const errorText = await response.text();
-    throw new Error(
-      `Supabase insert failed (${response.status}): ${errorText}`
+  const errorText = await response.text();
+
+  // PostgreSQL unique-constraint violation = deal already exists
+  if (response.status === 409 && errorText.includes("23505")) {
+    console.log(
+      `🛡️ DUPLICATE BLOCKED: ${deal.title} already exists for restaurant #${deal.restaurant_id}`
     );
+    return null;
   }
 
+  throw new Error(
+    `Supabase insert failed (${response.status}): ${errorText}`
+  );
+}
+  
   const inserted = await response.json();
   return inserted[0];
 }
@@ -201,10 +210,11 @@ const possibleMatch = !match
   
 const insertedDeal = await insertPendingDeal(scrapedDeal);
 
-console.log(
-  `📥 STAGED FOR REVIEW: DB #${insertedDeal.id} | ${insertedDeal.title} | active=${insertedDeal.active}`
-);
-
+if (insertedDeal) {
+  console.log(
+    `📥 STAGED FOR REVIEW: DB #${insertedDeal.id} | ${insertedDeal.title} | active=${insertedDeal.active}`
+  );
+}
    continue;
  }
    
