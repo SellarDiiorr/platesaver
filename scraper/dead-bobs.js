@@ -26,38 +26,49 @@ const cleanText = (text) =>
     .replace(/\s+/g, " ")
     .trim();
 
-const headings = headingMatches.map(match => cleanText(match[1]));
-const prices = priceMatches.map(match => cleanText(match[1]));
-    console.log("🧪 Inspecting context around scraped prices...");
+// Build deals using each price's actual position in the HTML.
+// For every price, find the nearest H3 heading before it.
+const deals = priceMatches.map((priceMatch) => {
+  const price = cleanText(priceMatch[1]);
+  const priceIndex = priceMatch.index;
 
-priceMatches.forEach((match) => {
-  const price = cleanText(match[1]);
-  const index = match.index;
+  // Only inspect HTML that appears before this specific price.
+  const htmlBeforePrice = html.slice(0, priceIndex);
 
-  const start = Math.max(0, index - 500);
-  const end = Math.min(html.length, index + 800);
+  // Find every H3 heading before the price.
+  const precedingHeadings = [
+    ...htmlBeforePrice.matchAll(
+      /<h3[^>]*class=["'][^"']*elementor-heading-title[^"']*["'][^>]*>([\s\S]*?)<\/h3>/gi
+    )
+  ];
 
-  console.log(`\n----- CONTEXT FOR ${price} @ ${index} -----`);
-  console.log(html.slice(start, end));
-  console.log("----- END CONTEXT -----\n");
-});
+  // The last H3 before the price should belong to this deal.
+  const nearestHeading = precedingHeadings.at(-1);
+
+  if (!nearestHeading) {
+    console.log(`⚠️ Could not find heading for ${price}`);
+    return null;
+  }
+
+  const title = cleanText(nearestHeading[1]);
+
+  return {
+    restaurant_id: 5,
+    restaurant: "Dead Bob's Bar & Restaurant",
+    title,
+    price,
+    source: URL,
+    verification_status: "pending",
+    verification_method: "automated"
+  };
+}).filter(Boolean);
+
+console.log("🧩 Position-based extraction results:");
+
+deals.forEach((deal) => {
+  console.log(`🍽️ ${deal.title} | ${deal.price}`);
+});›
     
-if (headings.length < prices.length) {
-  throw new Error(
-    `Extraction mismatch: found ${headings.length} headings but ${prices.length} prices`
-  );
-}  
-    
-const deals = prices.map((price, index) => ({
-  restaurant_id: 5,
-  restaurant: "Dead Bob's Bar & Restaurant",
-  title: headings[index],
-  price: price,
-  source: URL,
-  verification_status: "pending",
-  verification_method: "automated"
-}));
-
 console.log("🗄️ Reading Dead Bob's existing deals from Supabase...");
 
 const supabaseResponse = await fetch(
