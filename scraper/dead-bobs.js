@@ -89,17 +89,6 @@ if (!supabaseResponse.ok) {
 }
 
 const databaseDeals = await supabaseResponse.json();
-
-// TEMP TEST: Pretend Chicken Parmesan has a different database price
-const priceTestDeal = databaseDeals.find(
-  (deal) =>
-    String(deal.title).toLowerCase().replace(/[^a-z0-9]/g, "") ===
-    "chickenparmesan"
-);
-if (priceTestDeal) {
-  priceTestDeal.title = "Chicken Parm";
-  priceTestDeal.price = "$8.99";
-}
     
 console.log(`📦 Supabase returned ${databaseDeals.length} Dead Bob's deals:`);
 
