@@ -1,12 +1,51 @@
 const URL = "https://deadbobsstpete.com/";
 const SUPABASE_URL = process.env.SUPABASE_URL;
 const SUPABASE_KEY = process.env.SUPABASE_KEY;
+const SUPABASE_SECRET_KEY = process.env.SUPABASE_SECRET_KEY;
 const RESTAURANT_ID = 5;
 
 async function scrapeDeadBobs() {
   console.log("🍽️ PlateSaver scraper starting...");
   console.log(`Checking: ${URL}`);
 
+async function insertPendingDeal(deal) {
+  if (!SUPABASE_SECRET_KEY) {
+    throw new Error("SUPABASE_SECRET_KEY is missing.");
+  }
+
+  const response = await fetch(`${SUPABASE_URL}/rest/v1/deals`, {
+    method: "POST",
+    headers: {
+      apikey: SUPABASE_SECRET_KEY,
+      Authorization: `Bearer ${SUPABASE_SECRET_KEY}`,
+      "Content-Type": "application/json",
+      Prefer: "return=representation"
+    },
+    body: JSON.stringify({
+      restaurant_id: deal.restaurant_id,
+      restaurant: deal.restaurant,
+      title: deal.title,
+      price: deal.price,
+      source: deal.source,
+
+      // SAFETY: scraper discoveries never publish automatically
+      active: false,
+      verification_status: "pending",
+      verification_method: "automated"
+    })
+  });
+
+  if (!response.ok) {
+    const errorText = await response.text();
+    throw new Error(
+      `Supabase insert failed (${response.status}): ${errorText}`
+    );
+  }
+
+  const inserted = await response.json();
+  return inserted[0];
+}
+  
   try {
     const response = await fetch(URL);
 
@@ -121,7 +160,7 @@ const similarity = (a, b) => {
   return 0;
 };
     
-deals.forEach((scrapedDeal) => {
+for (const scrapedDeal of deals) {
   const match = databaseDeals.find(
     (dbDeal) => normalize(dbDeal.title) === normalize(scrapedDeal.title)
   );
@@ -146,7 +185,7 @@ const possibleMatch = !match
     );
   }
 
-  return;
+  continue;
 }  
   
  if (!match) {
@@ -154,26 +193,33 @@ const possibleMatch = !match
     console.log(
       `🟡 POSSIBLE MATCH: Website "${scrapedDeal.title}" ↔ DB "${possibleMatch.deal.title}" | score=${possibleMatch.score.toFixed(2)}`
     );
-    return;
+    continue;
   }
 
   console.log(
     `🆕 NEW DEAL: ${scrapedDeal.title} | ${scrapedDeal.price}`
   );
-  return;
-}
   
+const insertedDeal = await insertPendingDeal(scrapedDeal);
+
+console.log(
+  `📥 STAGED FOR REVIEW: DB #${insertedDeal.id} | ${insertedDeal.title} | active=${insertedDeal.active}`
+);
+
+   continue;
+ }
+   
   if (String(match.price) !== String(scrapedDeal.price)) {
     console.log(
       `💲 PRICE CHANGE: ${scrapedDeal.title} | DB: ${match.price} → Website: ${scrapedDeal.price}`
     );
-    return;
+    continue;
   }
 
 console.log(
     `🟢 MATCH: ${scrapedDeal.title} | ${scrapedDeal.price}`
   );
-});
+}
 
 console.log("🔎 Checking for database deals missing from website...");
 
