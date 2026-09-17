@@ -1,4 +1,7 @@
 const URL = "https://deadbobsstpete.com/";
+const SUPABASE_URL = process.env.SUPABASE_URL;
+const SUPABASE_KEY = process.env.SUPABASE_KEY;
+const RESTAURANT_ID = 5;
 
 async function scrapeDeadBobs() {
   console.log("🍽️ PlateSaver scraper starting...");
@@ -46,6 +49,35 @@ const deals = prices.map((price, index) => ({
   verification_method: "automated"
 }));
 
+console.log("🗄️ Reading Dead Bob's existing deals from Supabase...");
+
+const supabaseResponse = await fetch(
+  `${SUPABASE_URL}/rest/v1/deals?restaurant_id=eq.${RESTAURANT_ID}&select=id,title,price,active`,
+  {
+    headers: {
+      apikey: SUPABASE_KEY,
+      Authorization: `Bearer ${SUPABASE_KEY}`
+    }
+  }
+);
+
+if (!supabaseResponse.ok) {
+  const errorText = await supabaseResponse.text();
+  throw new Error(
+    `Supabase returned ${supabaseResponse.status}: ${errorText}`
+  );
+}
+
+const databaseDeals = await supabaseResponse.json();
+
+console.log(`📦 Supabase returned ${databaseDeals.length} Dead Bob's deals:`);
+
+databaseDeals.forEach((deal) => {
+  console.log(
+    `DB #${deal.id}: ${deal.title} | ${deal.price} | active=${deal.active}`
+  );
+});
+    
 console.log("🤖 PlateSaver structured deals:");
 
 deals.forEach((deal, index) => {
