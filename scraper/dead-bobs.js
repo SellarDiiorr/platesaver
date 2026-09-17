@@ -1,7 +1,8 @@
 const {
   normalize,
   similarity,
-  getRestaurantDeals
+  getRestaurantDeals,
+  insertPendingDeal
 } = require("./scraper-engine");
 const URL = "https://deadbobsstpete.com/";
 const SUPABASE_URL = process.env.SUPABASE_URL;
@@ -12,11 +13,6 @@ const RESTAURANT_ID = 5;
 async function scrapeDeadBobs() {
   console.log("🍽️ PlateSaver scraper starting...");
   console.log(`Checking: ${URL}`);
-
-async function insertPendingDeal(deal) {
-  if (!SUPABASE_SECRET_KEY) {
-    throw new Error("SUPABASE_SECRET_KEY is missing.");
-  }
 
   const response = await fetch(`${SUPABASE_URL}/rest/v1/deals`, {
     method: "POST",
