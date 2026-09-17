@@ -30,7 +30,13 @@ if (headings.length < prices.length) {
     `Extraction mismatch: found ${headings.length} headings but ${prices.length} prices`
   );
 }    
-    const deals = prices.map((price, index) => ({
+if (headings.length < prices.length) {
+  throw new Error(
+    `Extraction mismatch: found ${headings.length} headings but ${prices.length} prices`
+  );
+}  
+    
+const deals = prices.map((price, index) => ({
   restaurant_id: 5,
   restaurant: "Dead Bob's Bar & Restaurant",
   title: headings[index],
