@@ -66,8 +66,8 @@ const deals = priceMatches.map((priceMatch) => {
 console.log("🧩 Position-based extraction results:");
 
 deals.forEach((deal) => {
-  console.log(`🍽️ ${deal.title} | ${deal.price}`);
-});›
+  console.log(`${deal.title} | ${deal.price}`);
+});
     
 console.log("🗄️ Reading Dead Bob's existing deals from Supabase...");
 
