@@ -28,33 +28,82 @@ async function scrapeBierBoutique() {
       .replace(/\s+/g, " ")
       .trim();
 
-    const signals = [
-      "Maniac Monday",
-      "50% off",
-      "Local Can Tuesday",
-      "$3 off",
-      "Happy Hour",
-      "$2 off",
-      "$6 tots",
-      "Fish Fry Friday"
-    ];
+const deals = [];
 
-    console.log("🔎 Searching specials page...");
+if (
+  pageText.includes("Maniac Monday") &&
+  pageText.includes("50% off")
+) {
+  deals.push({
+    restaurant_id: RESTAURANT_ID,
+    title: "Maniac Monday",
+    price: "50% off",
+    source: URL,
+    verification_status: "pending",
+    verification_method: "automated"
+  });
+}
 
-    signals.forEach((signal) => {
-      const index = pageText.toLowerCase().indexOf(signal.toLowerCase());
+if (
+  pageText.includes("Local Can Tuesday") &&
+  pageText.includes("$3 off")
+) {
+  deals.push({
+    restaurant_id: RESTAURANT_ID,
+    title: "Local Can Tuesday",
+    price: "$3 off",
+    source: URL,
+    verification_status: "pending",
+    verification_method: "automated"
+  });
+}
 
-      if (index !== -1) {
-        const start = Math.max(0, index - 120);
-        const end = Math.min(pageText.length, index + 350);
+if (
+  pageText.includes("Happy Hour") &&
+  pageText.includes("$2 off")
+) {
+  deals.push({
+    restaurant_id: RESTAURANT_ID,
+    title: "Happy Hour Drinks",
+    price: "$2 off",
+    source: URL,
+    verification_status: "pending",
+    verification_method: "automated"
+  });
+}
 
-        console.log(`\n✅ FOUND: ${signal}`);
-        console.log(pageText.slice(start, end));
-      } else {
-        console.log(`❌ NOT FOUND: ${signal}`);
-      }
-    });
+if (
+  pageText.includes("Happy Hour") &&
+  pageText.includes("$6 tots")
+) {
+  deals.push({
+    restaurant_id: RESTAURANT_ID,
+    title: "Happy Hour Tots",
+    price: "$6",
+    source: URL,
+    verification_status: "pending",
+    verification_method: "automated"
+  });
+}
 
+if (pageText.includes("Fish Fry Friday")) {
+  deals.push({
+    restaurant_id: RESTAURANT_ID,
+    title: "Fish Fry Friday",
+    price: null,
+    source: URL,
+    verification_status: "pending",
+    verification_method: "automated"
+  });
+}
+
+console.log("🍺 Structured PlateSaver deals:");
+
+deals.forEach((deal, index) => {
+  console.log(`Deal ${index + 1}:`);
+  console.log(deal);
+});
+    
     console.log("\n🏁 Bier Boutique inspection complete.");
   } catch (error) {
     console.error("❌ Bier Boutique scraper failed:", error);
