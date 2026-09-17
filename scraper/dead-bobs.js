@@ -13,47 +13,6 @@ const RESTAURANT_ID = 5;
 async function scrapeDeadBobs() {
   console.log("🍽️ PlateSaver scraper starting...");
   console.log(`Checking: ${URL}`);
-
-  const response = await fetch(`${SUPABASE_URL}/rest/v1/deals`, {
-    method: "POST",
-    headers: {
-      apikey: SUPABASE_SECRET_KEY,
-      Authorization: `Bearer ${SUPABASE_SECRET_KEY}`,
-      "Content-Type": "application/json",
-      Prefer: "return=representation"
-    },
-    body: JSON.stringify({
-      restaurant_id: deal.restaurant_id,
-      title: deal.title,
-      price: deal.price,
-      source: deal.source,
-
-      // SAFETY: scraper discoveries never publish automatically
-      active: false,
-      verification_status: "pending",
-      verification_method: "automated"
-    })
-  });
-
-  if (!response.ok) {
-  const errorText = await response.text();
-
-  // PostgreSQL unique-constraint violation = deal already exists
-  if (response.status === 409 && errorText.includes("23505")) {
-    console.log(
-      `🛡️ DUPLICATE BLOCKED: ${deal.title} already exists for restaurant #${deal.restaurant_id}`
-    );
-    return null;
-  }
-
-  throw new Error(
-    `Supabase insert failed (${response.status}): ${errorText}`
-  );
-}
-  
-  const inserted = await response.json();
-  return inserted[0];
-}
   
   try {
     const response = await fetch(URL);
