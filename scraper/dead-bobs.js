@@ -1,4 +1,4 @@
-const { normalize } = require("./scraper-engine");
+const { normalize, similarity } = require("./scraper-engine");
 const URL = "https://deadbobsstpete.com/";
 const SUPABASE_URL = process.env.SUPABASE_URL;
 const SUPABASE_KEY = process.env.SUPABASE_KEY;
@@ -147,23 +147,7 @@ databaseDeals.forEach((deal) => {
 });
 
 console.log("🔎 Comparing website deals with PlateSaver database...");
-
-const similarity = (a, b) => {
-  const first = normalize(a);
-  const second = normalize(b);
-
-  if (first === second) return 1;
-
-  if (first.startsWith(second) || second.startsWith(first)) {
-    const shorter = Math.min(first.length, second.length);
-    const longer = Math.max(first.length, second.length);
-
-    return shorter / longer;
-  }
-
-  return 0;
-};
-    
+  
 for (const scrapedDeal of deals) {
   const match = databaseDeals.find(
     (dbDeal) => normalize(dbDeal.title) === normalize(scrapedDeal.title)
