@@ -1,4 +1,8 @@
-const { normalize, similarity } = require("./scraper-engine");
+const {
+  normalize,
+  similarity,
+  getRestaurantDeals
+} = require("./scraper-engine");
 const URL = "https://deadbobsstpete.com/";
 const SUPABASE_URL = process.env.SUPABASE_URL;
 const SUPABASE_KEY = process.env.SUPABASE_KEY;
@@ -119,24 +123,7 @@ deals.forEach((deal) => {
     
 console.log("🗄️ Reading Dead Bob's existing deals from Supabase...");
 
-const supabaseResponse = await fetch(
-  `${SUPABASE_URL}/rest/v1/deals?restaurant_id=eq.${RESTAURANT_ID}&select=id,title,price,active`,
-  {
-    headers: {
-      apikey: SUPABASE_KEY,
-      Authorization: `Bearer ${SUPABASE_KEY}`
-    }
-  }
-);
-
-if (!supabaseResponse.ok) {
-  const errorText = await supabaseResponse.text();
-  throw new Error(
-    `Supabase returned ${supabaseResponse.status}: ${errorText}`
-  );
-}
-
-const databaseDeals = await supabaseResponse.json();
+const databaseDeals = await getRestaurantDeals(RESTAURANT_ID);
     
 console.log(`📦 Supabase returned ${databaseDeals.length} Dead Bob's deals:`);
 
