@@ -191,12 +191,6 @@ deals.forEach((deal, index) => {
   console.log(deal);
 });
     
-console.log("🍽️ Potential deal titles:");
-console.log(headings);
-
-console.log("💵 Potential deal prices:");
-console.log(prices);
-    
     console.log("✅ Dead Bob's website reached successfully!");
     console.log(`Downloaded ${html.length} characters of webpage data.`);
  } catch (error) {
